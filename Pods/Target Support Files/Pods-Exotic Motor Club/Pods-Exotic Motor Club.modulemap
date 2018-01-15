@@ -1,0 +1,6 @@
+framework module Pods_Exotic_Motor_Club {
+  umbrella header "Pods-Exotic Motor Club-umbrella.h"
+
+  export *
+  module * { export * }
+}

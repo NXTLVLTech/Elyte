@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AD_UNIT_ID_FOR_BANNER_TEST</key>
+	<string>ca-app-pub-3940256099942544/2934735716</string>
+	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
+	<string>ca-app-pub-3940256099942544/4411468910</string>
+	<key>CLIENT_ID</key>
+	<string>884566649446-49gkjd52n1b1cak3bcu7gv5m0a9ebuf2.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.884566649446-49gkjd52n1b1cak3bcu7gv5m0a9ebuf2</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAh1vx8xtcOCcLU-6-jJw9Kz8LvyNTSW30</string>
+	<key>GCM_SENDER_ID</key>
+	<string>884566649446</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.nxtlvl.exoticmotorclub</string>
+	<key>PROJECT_ID</key>
+	<string>exotic-motor-club</string>
+	<key>STORAGE_BUCKET</key>
+	<string>exotic-motor-club.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<true></true>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<false></false>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:884566649446:ios:68128f3cb7b4543d</string>
+	<key>DATABASE_URL</key>
+	<string>https://exotic-motor-club.firebaseio.com</string>
+</dict>
+</plist>
