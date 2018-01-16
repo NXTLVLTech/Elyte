@@ -8,6 +8,7 @@
 
 import UIKit
 import MBProgressHUD
+import Firebase
 
 class BaseViewController: UIViewController {
 
@@ -67,6 +68,19 @@ class BaseViewController: UIViewController {
         let mainVC = mainStoryboard.instantiateViewController(withIdentifier: "MainTabVC")
         
         appDelegate.window?.switchRootViewController(mainVC)
+    }
+    
+    func logoutFromFirebase() {
+        do {
+            try Auth.auth().signOut()
+            hideProgressHUD(animated: true)
+            UserDefaults.standard.removeObject(forKey: "isLoggedIn")
+            UserDefaults.standard.synchronize()
+            loginVCRoot()
+        } catch let signOutError as NSError {
+            hideProgressHUD(animated: true)
+            presentAlert(message: "Error signing out: \(signOutError)")
+        }
     }
     
     func clearNavBar() {

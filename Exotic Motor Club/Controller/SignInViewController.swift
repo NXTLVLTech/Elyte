@@ -10,18 +10,19 @@ import UIKit
 import SwiftValidator
 import Firebase
 import FBSDKLoginKit
+import MicroBlink
 
 class SignInViewController: BaseViewController {
 
     //MARK: - Outlets
     @IBOutlet weak var signInButton: UIButton!
-    @IBOutlet weak var facebookButton: UIButton!
     @IBOutlet weak var emailTextField: CustomTextField!
     @IBOutlet weak var passwordTextField: CustomTextField!
     
     //MARK: - Proporties
     var validator = Validator()
     var allTextFields = [UITextField]()
+    var userDict: [String: AnyObject]?
     
     //MARK: - Lifecycle
     override func viewDidLoad() {
@@ -36,8 +37,6 @@ class SignInViewController: BaseViewController {
         
         signInButton.layer.cornerRadius = 4.0
         signInButton.layer.masksToBounds = true
-        facebookButton.layer.cornerRadius = 4.0
-        facebookButton.layer.masksToBounds = true
     }
     
     private func registerRules() {
@@ -52,6 +51,30 @@ class SignInViewController: BaseViewController {
         passwordTextField.delegate = self
         allTextFields.append(emailTextField)
         allTextFields.append(passwordTextField)
+    }
+    
+    //MARK: - Scanning functions
+    func coordinatorWithError(error: NSErrorPointer) -> PPCameraCoordinator? {
+
+        /** 0. Check if scanning is supported */
+
+        if (PPCameraCoordinator.isScanningUnsupported(for: PPCameraType.back, error: error)) {
+            return nil;
+        }
+        
+        let settings: PPSettings = PPSettings()
+        settings.licenseSettings.licenseKey = "4Q3JJCMH-KPAJ3MYI-GK5EPHWP-YKYOMOFV-4Y4LLZRY-WXTDRNPG-HC26NGHW-UNF4M426"
+
+        //Settings for driver licence scanning
+        do {
+            let usdlRecognizerSettings = PPUsdlRecognizerSettings()
+            settings.scanSettings.add(usdlRecognizerSettings)
+        }
+
+        //4. Initialize the Scanning Coordinator object
+        let coordinator: PPCameraCoordinator = PPCameraCoordinator(settings: settings)
+
+        return coordinator
     }
     
     //Email Sign In
@@ -95,87 +118,6 @@ class SignInViewController: BaseViewController {
         })
     }
     
-    //Facebook Sign In
-    private func facebookSignIn() {
-        showProgressHUD(animated: true)
-        
-        let facebookLogin = FBSDKLoginManager()
-        
-        facebookLogin.logOut()
-        
-        facebookLogin.logIn(withReadPermissions: ["email"], from: self) { [weak self] (result, error) in
-            
-            guard let unwrappedSelf = self else {
-                self?.hideProgressHUD(animated: true)
-                return
-            }
-            
-            if error != nil {
-                unwrappedSelf.hideProgressHUD(animated: true)
-                unwrappedSelf.presentAlert(message: "Unable to authenticate with Facebook. Please try again.")
-            } else if result?.isCancelled == true {
-                unwrappedSelf.hideProgressHUD(animated: true)
-            } else {
-                FacebookApi.firebaseCredentialRequest(success: { (facebookUserModel) in
-                    
-                    guard let fbUser = facebookUserModel else {
-                        unwrappedSelf.hideProgressHUD(animated: true)
-                        return
-                    }
-                    
-                    let credential = FacebookAuthProvider.credential(withAccessToken: FBSDKAccessToken.current().tokenString)
-                    unwrappedSelf.firebaseCredentialFacebookLogin(credential: credential, userData: fbUser)
-                }, failure: { (error) in
-                    
-                    unwrappedSelf.hideProgressHUD(animated: true)
-                    unwrappedSelf.presentAlert(message: error)
-                })
-            }
-        }
-    }
-    
-    //MARK: - Login Logic with facebook
-    private func firebaseCredentialFacebookLogin(credential: AuthCredential, userData: FacebookUserModel) {
-        Auth.auth().signIn(with: credential) { [weak self] (user, error) in
-            
-            guard let unwrappedSelf = self else {
-                self?.hideProgressHUD(animated: true)
-                return
-            }
-            
-            if error != nil {
-                unwrappedSelf.hideProgressHUD(animated: true)
-                unwrappedSelf.presentAlert(message: "Unable to authenticate with Firebase. Please try again.")
-            } else {
-                guard let userUID = user?.uid else {
-                    unwrappedSelf.hideProgressHUD(animated: true)
-                    return
-                }
-                
-                FirebaseCommunicator.instance.userRefrence.observeSingleEvent(of: .value, with: { (snapshot) in
-                    
-                    //If User is registered with facebook for the first time
-                    if !snapshot.hasChild(userUID) {
-                        
-                        unwrappedSelf.hideProgressHUD(animated: true)
-                        
-//                        unwrappedSelf.facebookUserData = userData
-//                        unwrappedSelf.performSegue(withIdentifier: "toTermsOfUseVCSegue", sender: nil)
-                        unwrappedSelf.presentAlert(message: "Success, just created.")
-                    } else {
-                        
-                        UserDefaults.standard.setValue("logged", forKey: "isLoggedIn")
-                        UserDefaults.standard.synchronize()
-                        unwrappedSelf.hideProgressHUD(animated: true)
-                        unwrappedSelf.mainVCRoot()
-                        unwrappedSelf.presentAlert(message: "Success")
-                        
-                    }
-                })
-            }
-        }
-    }
-    
     //MARK: - Button Action
     @IBAction func firebaseUserRegistrationButtonAction() {
         if currentReachabilityStatus == .reachableViaWiFi || currentReachabilityStatus == .reachableViaWWAN {
@@ -187,15 +129,34 @@ class SignInViewController: BaseViewController {
         }
     }
     
+    //MARK: - Create User scanning licence
+    @IBAction func createAccountButtonAction(_ sender: UIButton) {
+        
+        let error: NSErrorPointer = nil
+        let coordinator = self.coordinatorWithError(error: error)
+
+        if coordinator == nil {
+            let messageString: String = (error!.pointee?.localizedDescription) ?? ""
+            let alert = UIAlertController(title: "Warning", message: messageString, preferredStyle: .alert)
+            present(alert, animated: true, completion: nil)
+            return
+        }
+
+        /** Allocate and present the scanning view controller */
+        let scanningViewController: UIViewController = PPViewControllerFactory.cameraViewController(with: self, coordinator: coordinator!, error: nil)
+        
+        self.present(scanningViewController, animated: true, completion: nil)
+    }
     
-    @IBAction func facebookLoginButtonAction(_ sender: UIButton) {
-        if currentReachabilityStatus == .reachableViaWiFi || currentReachabilityStatus == .reachableViaWWAN {
-            
-            facebookSignIn()
-        } else {
-            noInternetAlert()
+    //MARK: - Segue
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "toPhoneNumberVCSegue" {
+            if let dest = segue.destination as? PhoneNumberViewController, let userDict = userDict {
+                dest.userDict = userDict
+            }
         }
     }
+    
 }
 
 //MARK: - TextField Delegates
@@ -218,8 +179,7 @@ extension SignInViewController: ValidationDelegate {
     func validationSuccessful() {
         
         if currentReachabilityStatus == .reachableViaWiFi || currentReachabilityStatus == .reachableViaWWAN {
-//            emailSignIn()
-            mainVCRoot()
+            emailSignIn()
         } else {
             noInternetAlert()
         }
@@ -235,3 +195,86 @@ extension SignInViewController: ValidationDelegate {
         }
     }
 }
+
+//MARK: - Scanning Camera Delegate
+extension SignInViewController: PPScanningDelegate {
+    func scanningViewControllerUnauthorizedCamera(_ scanningViewController: UIViewController & PPScanningViewController) {
+        presentAlert(message: "In order to scan driving licence please enable camera usage in settings.")
+    }
+    
+    func scanningViewController(_ scanningViewController: UIViewController & PPScanningViewController, didFindError error: Error) {
+        presentAlert(message: error.localizedDescription)
+    }
+    
+    func scanningViewControllerDidClose(_ scanningViewController: UIViewController & PPScanningViewController) {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func scanningViewController(_ scanningViewController: (UIViewController & PPScanningViewController)?, didOutputResults results: [PPRecognizerResult]) {
+        
+        guard let scanConroller = scanningViewController else {
+            presentAlert(message: "There was an error. Please try again..")
+            return
+        }
+        
+        //Scanning results are given in the array of PPRecognizerResult objects.
+        // first, pause scanning until we process all the results
+        scanConroller.pauseScanning()
+        
+            var firstName : String = ""
+            var lastName : String = ""
+            var dateOfBirth: String = ""
+            var address: String = ""
+        
+        // Collect data from the result
+        for result in results {
+            let usdlResult : PPUsdlRecognizerResult = result as! PPUsdlRecognizerResult
+            firstName = usdlResult.getField("Customer First Name")!
+            lastName = usdlResult.getField("Customer Family Name")!
+            dateOfBirth = usdlResult.getField("Date of Birth")!
+            dateOfBirth = String(dateOfBirth.suffix(4))
+            address = usdlResult.getField("Full Address")!
+        }
+        
+        let userDict = ["firstName": firstName,
+                        "lastName": lastName,
+                        "dateOfBirth": dateOfBirth,
+                        "address": address]
+        
+        guard let yearsOld = Int(dateOfBirth) else {
+            dismiss(animated: true, completion: {
+                self.presentAlert(message: "Problem with formatting years format. Please try again..")
+            })
+            return
+        }
+        
+        //Checking if user 25 years old
+        if checkIf25YearsOld(yearsOld: yearsOld) {
+            dismiss(animated: true, completion: {
+                self.userDict = userDict as [String : AnyObject]
+                self.performSegue(withIdentifier: "toPhoneNumberVCSegue", sender: nil)
+            })
+            
+        } else {
+            dismiss(animated: true, completion: {
+                self.presentAlert(message: "Turn 25 and come back to sign up.")
+            })
+        }
+    }
+    
+    
+    //Logic for checking if user 25 years old
+    private func checkIf25YearsOld(yearsOld: Int) -> Bool {
+        
+        let date = Date()
+        let calendar = Calendar.current
+        let year = calendar.component(.year, from: date)
+        
+        if year - yearsOld >= 25 {
+            return true
+        } else {
+            return false
+        }
+    }
+}
+

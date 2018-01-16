@@ -14,6 +14,9 @@ class PhoneNumberViewController: BaseViewController {
     //MARK: - Outlets
     @IBOutlet weak var phoneNumberTextField: UITextField!
     
+    //MARK: - Proporties
+    var userDict: [String: AnyObject]?
+    
     //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,24 +33,23 @@ class PhoneNumberViewController: BaseViewController {
     //MARK: - Button Actions
     @IBAction func nextButtonAction(_ sender: UIButton) {
         
-//        guard let uid = Auth.auth().currentUser?.uid else { return }
-        
         guard let number = phoneNumberTextField.text, number.count == 12 else {
             presentAlert(message: "Please enter your phone number.")
             return
         }
+        guard var userDict = userDict else { return }
         
-//        let dict = ["phoneNumber": number]
-//        FirebaseDataService.instance.saveData(uid: uid, dict: dict)
-//        performSegue(withIdentifier: "toFourDigitsVCSegue", sender: number)
+        userDict["phoneNumber"] = number as AnyObject
+        performSegue(withIdentifier: "toAddProfileImageVCSegue", sender: nil)
     }
     
+    //MARK: - Segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        if segue.identifier == "toFourDigitsVCSegue" {
-//            if let dest = segue.destination as? FourDigitsCodeViewController, let sender = sender as? String {
-//                dest.number = sender
-//            }
-//        }
+        if segue.identifier == "toAddProfileImageVCSegue" {
+            if let dest = segue.destination as? AddProfilePictureViewController, let userDict = userDict {
+                dest.userDict = userDict
+            }
+        }
     }
 }
 

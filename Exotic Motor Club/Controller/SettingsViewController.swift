@@ -39,8 +39,17 @@ class SettingsViewController: BaseViewController {
     @objc private func onOffToggle(_ sender: UISwitch) {
         debugPrint(sender.isOn)
     }
+    
+    //MARK: - Button Actions
+    @IBAction func logoutButtonAction(_ sender: UIButton) {
+        showProgressHUD(animated: true)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            self.logoutFromFirebase()
+        }
+    }
 }
 
+//MARK: - TableView Delegates
 extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 5
@@ -54,7 +63,6 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
             } else {
                 onOffSwitchToggle(cell: cell)
             }
-            
             cell.textLabel?.text = cellTitle[indexPath.row]
             cell.textLabel?.font = UIFont(name: "Helvetica", size: 12.0)
             cell.textLabel?.textColor = .white
@@ -65,6 +73,7 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
         if indexPath.row == 2 {
             let urlEMail = NSURL(string: "mailto:support@motorclub.com")
             
@@ -72,11 +81,13 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
                 UIApplication.shared.openURL(urlEMail! as URL)
             }
         } else if indexPath.row == 3 {
+            
             if let privacyPolicyVC = storyboard?.instantiateViewController(withIdentifier: "PrivacyPolicyVC") as? PrivacyPolicyViewController {
                 privacyPolicyVC.privacyPolicy = true
                 present(privacyPolicyVC, animated: true, completion: nil)
             }
         } else if indexPath.row == 4 {
+            
             if let privacyPolicyVC = storyboard?.instantiateViewController(withIdentifier: "PrivacyPolicyVC") as? PrivacyPolicyViewController {
                 present(privacyPolicyVC, animated: true, completion: nil)
             }
@@ -95,8 +106,8 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
         cell.accessoryView = toggle
     }
     
+    //Setting custom right side indicator arrow
     private func addCheckmark(cell: UITableViewCell) {
-        //Setting custom right side indicator arrow
         let image = UIImage(named: "purple")
         let checkmark  = UIImageView(frame:CGRect(x:0, y:0, width:(image?.size.width)!, height:(image?.size.height)!));
         checkmark.image = image

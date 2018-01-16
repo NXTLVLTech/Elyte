@@ -19,8 +19,9 @@ class Car {
     var imageArray: [UIImage]
     var pickupLocation: String
     var details: String
+    var topSpeedDetails: String
     
-    init(name: String, price: Int, mainImage: UIImage, numberOfSeats: Int, maxSpeed: Int, engine: String, imageArray: [UIImage], pickupLocation: String, details: String) {
+    init(name: String, price: Int, mainImage: UIImage, numberOfSeats: Int, maxSpeed: Int, engine: String, imageArray: [UIImage], pickupLocation: String, details: String, topSpeedDetails: String) {
         
         self.name = name
         self.price = price
@@ -31,5 +32,6 @@ class Car {
         self.pickupLocation = pickupLocation
         self.imageArray = imageArray
         self.details = details
+        self.topSpeedDetails = topSpeedDetails
     }
 }

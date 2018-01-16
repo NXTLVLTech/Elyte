@@ -11,7 +11,6 @@ import UIKit
 class RewardViewController: BaseViewController {
     
     //MARK: - Outlets
-    
     @IBOutlet weak var rewardsButton: GradientView!
     @IBOutlet weak var shareCodeButton: UIButton!
     

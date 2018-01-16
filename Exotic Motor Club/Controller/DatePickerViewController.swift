@@ -28,18 +28,21 @@ class DatePickerViewController: UIViewController {
     var rentDateType: RentDateType?
     var delegate: DateReturnProtocol?
     
+    //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        datePicker.setValue(UIColor.white, forKeyPath: "textColor")
-        datePicker.setValue(false, forKeyPath: "highlightsToday")
-        saveButton.layer.cornerRadius = 4.0
-        datePicker.minimumDate = Date()
         setupView()
     }
     
     //MARK: - SetupView
     private func setupView() {
+        
+        datePicker.setValue(UIColor.white, forKeyPath: "textColor")
+        datePicker.setValue(false, forKeyPath: "highlightsToday")
+        saveButton.layer.cornerRadius = 4.0
+        datePicker.minimumDate = Date()
+        
         guard let dateType = rentDateType else { return }
         switch dateType {
         case .rentalDate:
@@ -49,6 +52,7 @@ class DatePickerViewController: UIViewController {
         }
     }
     
+    //MARK: - Button Actions
     @IBAction func returnDateButtonAction(_ sender: UIButton) {
         guard let dateType = rentDateType else { return }
         delegate?.returnDate(date: datePicker.date, dateType: dateType)

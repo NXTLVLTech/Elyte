@@ -196,8 +196,7 @@ extension EditProfileViewController: ValidationDelegate {
     func validationSuccessful() {
         
         //TODO:
-//        guard let uid =  Auth.auth().currentUser?.uid else { return }
-        let uid = "123"
+        guard let uid =  Auth.auth().currentUser?.uid else { return }
         
         if currentReachabilityStatus == .reachableViaWiFi || currentReachabilityStatus == .reachableViaWWAN {
             guard let type = editProfileType else { return }
@@ -229,6 +228,7 @@ extension EditProfileViewController: ValidationDelegate {
     }
 }
 
+//MARK: - TextField Delegates
 extension EditProfileViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

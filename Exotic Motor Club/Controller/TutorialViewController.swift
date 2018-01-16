@@ -19,6 +19,7 @@ class TutorialViewController: BaseViewController {
     let tutorialTitle = ["text1", "text2", "text3"]
     var tappedIndex: Int = 0
     
+    //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
 

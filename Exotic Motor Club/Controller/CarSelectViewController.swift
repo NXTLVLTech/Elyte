@@ -127,6 +127,7 @@ class CarSelectViewController: BaseViewController, DateReturnProtocol {
         performSegue(withIdentifier: "toBookingVCSegue", sender: nil)
     }
     
+    //MARK: - Segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "toBookingVCSegue" {
             if let dest = segue.destination as? BookingViewController, let car = car, let returnDate = returnDate, let rentalDate = rentalDate {

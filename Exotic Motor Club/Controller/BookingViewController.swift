@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class BookingViewController: BaseViewController {
     
@@ -20,6 +21,7 @@ class BookingViewController: BaseViewController {
     @IBOutlet weak var carPriceLabel: UILabel!
     @IBOutlet weak var tripTotalLabel: UILabel!
     @IBOutlet weak var totalLabel: UILabel!
+    @IBOutlet weak var carBookingDetailsLabel: UILabel!
     
     //MARK: - Proporties
     var car: Car?
@@ -36,6 +38,7 @@ class BookingViewController: BaseViewController {
         carPriceLabel.text = "$\(car.price)"
         tripTotalLabel.text = "$\(car.price)"
         totalLabel.text = "$\(car.price + 23)"
+        carBookingDetailsLabel.text = car.topSpeedDetails
         
         //Date Formatter
         let formatter = DateFormatter()
@@ -66,15 +69,13 @@ class BookingViewController: BaseViewController {
     //MARK: - Button Actions
     @IBAction func bookVehicleButtonAction(_ sender: UIButton) {
         
-        guard let car = car, let rentalDate = rentalDate, let returnDate = returnDate else {
+        guard let car = car, let rentalDate = rentalDate, let returnDate = returnDate, let uid = Auth.auth().currentUser?.uid else {
             return
         }
         guard let guest = guestName.text, guest.count > 0 else {
             presentAlert(message: "Please enter guest name.")
             return
         }
-        
-        showProgressHUD(animated: true)
         
         //Date Formatter
         let formatter = DateFormatter()
@@ -95,8 +96,10 @@ class BookingViewController: BaseViewController {
         
         if currentReachabilityStatus == .reachableViaWiFi || currentReachabilityStatus == .reachableViaWWAN {
             
+            showProgressHUD(animated: true)
+            
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                FirebaseCommunicator.instance.userBooking(uid: "123", dict: bookingDict, carType: car.name)
+                FirebaseCommunicator.instance.userBooking(uid: uid, dict: bookingDict, carType: car.name)
                 self.hideProgressHUD()
                 self.presentAlert(title: nil, message: "Vehicle successfully booked!", confirmation: { (alert) in
                     self.navigationController?.popToRootViewController(animated: true)

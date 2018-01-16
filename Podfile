@@ -16,5 +16,4 @@ target 'Exotic Motor Club' do
   pod 'SwiftValidator', :git => 'https://github.com/jpotts18/SwiftValidator.git', :branch => 'master'
   pod 'FBSDKLoginKit'
   pod 'PageControls/SnakePageControl'
-  pod 'PPBlinkID', '~> 2.15.0'
 end

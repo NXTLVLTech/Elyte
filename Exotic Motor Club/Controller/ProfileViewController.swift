@@ -8,6 +8,7 @@
 
 import UIKit
 import Kingfisher
+import Firebase
 
 class ProfileViewController: BaseViewController {
     
@@ -34,6 +35,7 @@ class ProfileViewController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
         self.navigationController?.setNavigationBarHidden(true, animated: true)
         fetchUserData()
     }
@@ -50,7 +52,6 @@ class ProfileViewController: BaseViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.tableFooterView = UIView()
-        
         profileImage.layer.cornerRadius = profileImage.bounds.height / 2
     }
     
@@ -67,13 +68,12 @@ class ProfileViewController: BaseViewController {
             
             showProgressHUD(animated: true)
             
-            //TODO:
-//            guard let uid = Auth.auth().currentUser?.uid else {
-//                self.hideProgressHUD()
-//                return
-//            }
-            
-            FirebaseCommunicator.instance.getUserProfileData(uid: "123", success: { [weak self] (user) in
+            guard let uid = Auth.auth().currentUser?.uid else {
+                self.hideProgressHUD()
+                return
+            }
+        
+            FirebaseCommunicator.instance.getUserProfileData(uid: uid, success: { [weak self] (user) in
                 
                 guard let user = user, let unwrappedSelf = self else {
                     self?.hideProgressHUD()
@@ -108,6 +108,7 @@ class ProfileViewController: BaseViewController {
     @IBAction func settingsButtonAction(_ sender: UIButton) {
         performSegue(withIdentifier: "toSettingsVCSegue", sender: nil)
     }
+    
     //MARK: - Segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "toEditProfileVCSegue" {
@@ -145,7 +146,7 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         if user != nil {
             return 5
         }
-        return 0
+        return 5
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

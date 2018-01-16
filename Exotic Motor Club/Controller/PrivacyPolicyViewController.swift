@@ -15,6 +15,7 @@ class PrivacyPolicyViewController: UIViewController {
     //MARK: - Propertie
     var privacyPolicy: Bool?
     
+    //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -25,6 +26,7 @@ class PrivacyPolicyViewController: UIViewController {
         }
     }
     
+    //MARK: - Button Action
     @IBAction func dismissButtonAction(_ sender: UIButton) {
         dismiss(animated: true, completion: nil)
     }

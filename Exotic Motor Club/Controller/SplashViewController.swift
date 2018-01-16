@@ -14,9 +14,12 @@ class SplashViewController: BaseViewController {
         super.viewDidLoad()
 
         if UserDefaults.standard.object(forKey: "tutorialWatched") != nil {
-            //LOGIN
-            mainVCRoot()
-//            loginVCRoot()
+            
+            if UserDefaults.standard.object(forKey: "isLoggedIn") != nil {
+                self.mainVCRoot()
+            } else {
+                self.loginVCRoot()
+            }
         } else {
             tutorialVC()
         }

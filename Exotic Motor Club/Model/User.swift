@@ -13,7 +13,6 @@ class User {
     var firstName: String
     var lastName: String
     var email: String
-    var uid: String
     var phoneNumber: String?
     var profileImageURL: String?
     
@@ -22,14 +21,12 @@ class User {
         guard
             let firstName = dict["firstName"] as? String,
             let lastName = dict["lastName"] as? String,
-            let email = dict["email"] as? String,
-            let uid = dict["uid"] as? String
+            let email = dict["email"] as? String
             else { return nil }
         
         self.firstName = firstName
         self.lastName = lastName
         self.email = email
-        self.uid = uid
         
         if let phoneNumber = dict["phoneNumber"] as? String {
             self.phoneNumber = phoneNumber
