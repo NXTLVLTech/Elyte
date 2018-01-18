@@ -84,12 +84,12 @@ class CarSelectViewController: BaseViewController, DateReturnProtocol {
     }
     
     @objc private func rentalDate(_ sender: UIGestureRecognizer) {
-        rentDateType = .rentalDate
+        rentDateType = .rentalDate(maxDate: returnDate)
         performSegue(withIdentifier: "toDatePicker", sender: nil)
     }
     
     @objc private func returnDate(_ sender: UIGestureRecognizer) {
-        rentDateType = .returnDate
+        rentDateType = .returnDate(minDate: rentalDate)
         performSegue(withIdentifier: "toDatePicker", sender: nil)
     }
     

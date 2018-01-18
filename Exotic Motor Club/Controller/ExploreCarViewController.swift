@@ -28,7 +28,9 @@ class ExploreCarViewController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
         self.navigationController?.setNavigationBarHidden(true, animated: true)
+        collectionView.reloadData()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -99,6 +101,13 @@ extension ExploreCarViewController: UICollectionViewDelegate, UICollectionViewDa
 extension ExploreCarViewController: NLSegmentControlDelegate {
     
     func didChangeSegment(toIndex index: Int) {
-        debugPrint(index)
+        animateCollectionView()
+    }
+    
+    private func animateCollectionView() {
+        collectionView.layer.opacity = 0
+        UIView.animate(withDuration: 0.7) {
+            self.collectionView.layer.opacity = 1
+        }
     }
 }

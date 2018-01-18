@@ -13,8 +13,8 @@ protocol DateReturnProtocol {
 }
 
 enum RentDateType {
-    case rentalDate
-    case returnDate
+    case rentalDate(maxDate: Date?)
+    case returnDate(minDate: Date?)
 }
 
 class DatePickerViewController: UIViewController {
@@ -45,9 +45,11 @@ class DatePickerViewController: UIViewController {
         
         guard let dateType = rentDateType else { return }
         switch dateType {
-        case .rentalDate:
+        case .rentalDate(let maxDate):
+            datePicker.maximumDate = maxDate
             titleLabel.text = "Rental Date and Time"
-        case .returnDate:
+        case .returnDate(let minDate):
+            datePicker.minimumDate = minDate
             titleLabel.text = "Return Date and Time"
         }
     }

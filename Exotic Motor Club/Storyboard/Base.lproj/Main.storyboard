@@ -322,6 +322,7 @@
                     </view>
                     <connections>
                         <outlet property="emailTextField" destination="8fm-ZN-lMl" id="wpM-bB-xjA"/>
+                        <outlet property="logoImageView" destination="Dv3-pX-G28" id="gsl-Gv-eql"/>
                         <outlet property="passwordTextField" destination="HBz-vK-06k" id="S0U-xp-G7M"/>
                         <outlet property="signInButton" destination="xbn-oj-o1H" id="Fvv-hR-iee"/>
                         <segue destination="6DR-yb-X0c" kind="show" identifier="toPhoneNumberVCSegue" id="Hn1-tc-2Qy"/>
@@ -427,6 +428,7 @@
                                             <outlet property="carImageView" destination="uD9-Ey-OEE" id="i6j-8K-T2K"/>
                                             <outlet property="carNameLabel" destination="9Fn-Ba-RKg" id="rOO-AD-mEf"/>
                                             <outlet property="carPriceLabel" destination="2qr-cG-IQK" id="BzF-E5-wpX"/>
+                                            <outlet property="grayView" destination="GoO-6m-4eP" id="qEC-Oj-2tc"/>
                                             <outlet property="priceView" destination="Ge6-NY-7lP" id="Of3-PT-giW"/>
                                         </connections>
                                     </collectionViewCell>
@@ -1650,8 +1652,11 @@
                     </view>
                     <tabBarItem key="tabBarItem" title="" image="icon_tab1" id="TcZ-kD-TeB"/>
                     <connections>
+                        <outlet property="detailsLabel" destination="1ah-JN-ksW" id="xaa-C5-Y6J"/>
+                        <outlet property="imageView" destination="gR6-hL-XLo" id="c7S-KT-4cs"/>
                         <outlet property="rewardsButton" destination="LTH-pd-z05" id="liW-yI-1NG"/>
                         <outlet property="shareCodeButton" destination="7nt-1Y-MzW" id="dsz-YT-w0K"/>
+                        <outlet property="titleLabel" destination="HA2-JH-UAt" id="rue-FV-N0c"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2kw-yE-tbM" userLabel="First Responder" sceneMemberID="firstResponder"/>

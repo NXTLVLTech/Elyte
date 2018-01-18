@@ -9,7 +9,6 @@
 import UIKit
 import SwiftValidator
 import Firebase
-import FBSDKLoginKit
 import MicroBlink
 
 class SignInViewController: BaseViewController {
@@ -18,6 +17,7 @@ class SignInViewController: BaseViewController {
     @IBOutlet weak var signInButton: UIButton!
     @IBOutlet weak var emailTextField: CustomTextField!
     @IBOutlet weak var passwordTextField: CustomTextField!
+    @IBOutlet weak var logoImageView: UIImageView!
     
     //MARK: - Proporties
     var validator = Validator()
@@ -37,6 +37,22 @@ class SignInViewController: BaseViewController {
         
         signInButton.layer.cornerRadius = 4.0
         signInButton.layer.masksToBounds = true
+        
+        //Animate Views
+        emailTextField.layer.opacity = 0
+        passwordTextField.layer.opacity = 0
+        logoImageView.layer.opacity = 0
+        signInButton.layer.opacity = 0
+        
+        UIView.animate(withDuration: 0.5, animations: {
+            self.logoImageView.layer.opacity = 1
+            self.signInButton.layer.opacity = 1
+        }) { (_) in
+            UIView.animate(withDuration: 0.4, animations: {
+                self.passwordTextField.layer.opacity = 1
+                self.emailTextField.layer.opacity = 1
+            })
+        }
     }
     
     private func registerRules() {

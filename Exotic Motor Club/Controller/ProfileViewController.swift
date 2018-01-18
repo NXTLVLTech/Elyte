@@ -146,7 +146,7 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         if user != nil {
             return 5
         }
-        return 5
+        return 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

@@ -14,6 +14,5 @@ target 'Exotic Motor Club' do
   pod 'Kingfisher', '~> 4.0'
   pod 'IQKeyboardManagerSwift'
   pod 'SwiftValidator', :git => 'https://github.com/jpotts18/SwiftValidator.git', :branch => 'master'
-  pod 'FBSDKLoginKit'
   pod 'PageControls/SnakePageControl'
 end
