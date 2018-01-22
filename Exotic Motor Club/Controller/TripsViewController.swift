@@ -46,7 +46,11 @@ extension TripsViewController: NLSegmentControlDelegate {
     }
     
     private func updateNoTripsView(at index: Int) {
+        noTripsImageView.layer.opacity = 0
+        noTripsLabel.layer.opacity = 0
         if index == 0 {
+            
+            
             noTripsImageView.image = UIImage(named: "noUpcomingTrips")
             noTripsLabel.text = "No Upcomming Trips"
         } else {
