@@ -148,20 +148,28 @@ class SignInViewController: BaseViewController {
     //MARK: - Create User scanning licence
     @IBAction func createAccountButtonAction(_ sender: UIButton) {
         
-        let error: NSErrorPointer = nil
-        let coordinator = self.coordinatorWithError(error: error)
-
-        if coordinator == nil {
-            let messageString: String = (error!.pointee?.localizedDescription) ?? ""
-            let alert = UIAlertController(title: "Warning", message: messageString, preferredStyle: .alert)
-            present(alert, animated: true, completion: nil)
-            return
-        }
-
-        /** Allocate and present the scanning view controller */
-        let scanningViewController: UIViewController = PPViewControllerFactory.cameraViewController(with: self, coordinator: coordinator!, error: nil)
+//        let error: NSErrorPointer = nil
+//        let coordinator = self.coordinatorWithError(error: error)
+//
+//        if coordinator == nil {
+//            let messageString: String = (error!.pointee?.localizedDescription) ?? ""
+//            let alert = UIAlertController(title: "Warning", message: messageString, preferredStyle: .alert)
+//            present(alert, animated: true, completion: nil)
+//            return
+//        }
+//
+//        /** Allocate and present the scanning view controller */
+//        let scanningViewController: UIViewController = PPViewControllerFactory.cameraViewController(with: self, coordinator: coordinator!, error: nil)
+//
+//        self.present(scanningViewController, animated: true, completion: nil)
+        let userDict = ["firstName": "Jared",
+                        "lastName": "DaSilva",
+                        "dateOfBirth": "06211990",
+                        "address": "1519 MAXIMILLIAN DR"] as [String : AnyObject]
         
-        self.present(scanningViewController, animated: true, completion: nil)
+        self.userDict = userDict
+        
+        self.performSegue(withIdentifier: "toPhoneNumberVCSegue", sender: nil)
     }
     
     //MARK: - Segue
