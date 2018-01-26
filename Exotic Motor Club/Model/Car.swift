@@ -12,26 +12,36 @@ class Car {
     
     var name: String
     var price: Int
-    var mainImage: UIImage
+    var imageURL: String
     var numberOfSeats: Int
     var maxSpeed: Int
     var engine: String
-    var imageArray: [UIImage]
     var pickupLocation: String
     var details: String
-    var topSpeedDetails: String
+    var characteristics: String
     
-    init(name: String, price: Int, mainImage: UIImage, numberOfSeats: Int, maxSpeed: Int, engine: String, imageArray: [UIImage], pickupLocation: String, details: String, topSpeedDetails: String) {
+    init?(dict: [String: AnyObject]) {
+        
+        guard
+            let name = dict["name"] as? String,
+            let price = dict["price"] as? Int,
+            let imageURL = dict["image"] as? String,
+            let numberOfSeats = dict["numOfSeats"] as? Int,
+            let maxSpeed = dict["maxSpeed"] as? Int,
+            let engine = dict["engine"] as? String,
+            let pickupLocation = dict["pickupLocation"] as? String,
+            let details = dict["details"] as? String,
+            let characteristics = dict["characteristics"] as? String
+            else { return nil }
         
         self.name = name
         self.price = price
-        self.mainImage = mainImage
+        self.imageURL = imageURL
         self.numberOfSeats = numberOfSeats
         self.maxSpeed = maxSpeed
         self.engine = engine
         self.pickupLocation = pickupLocation
-        self.imageArray = imageArray
         self.details = details
-        self.topSpeedDetails = topSpeedDetails
+        self.characteristics = characteristics
     }
 }

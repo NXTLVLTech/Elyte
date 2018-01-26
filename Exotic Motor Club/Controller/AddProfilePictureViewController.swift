@@ -15,7 +15,7 @@ class AddProfilePictureViewController: BaseViewController, UIImagePickerControll
     @IBOutlet weak var imageView: UIImageView!
     
     //MARK: - Proporties
-    var userDict: [String: AnyObject]?
+    var userDict: [String: AnyObject]!
     var isAdded: Bool = false
     
     //MARK: - Lifecycle

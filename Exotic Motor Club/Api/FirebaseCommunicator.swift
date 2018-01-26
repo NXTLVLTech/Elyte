@@ -17,11 +17,13 @@ class FirebaseCommunicator {
     static let instance = FirebaseCommunicator()
     
     //Database Refrences
-    var userRefrence = dbBase.child("users")
-    var bookingrefrence = dbBase.child("bookings")
+    let userRefrence = dbBase.child("users")
+    let bookingRefrence = dbBase.child("bookings")
+    let vehicleReference = dbBase.child("vehicles")
     
     //Storage Refrences
-    var storageProfileRef = storageBase.child("profile-pics")
+    let storageProfileRef = storageBase.child("profile-pics")
+    let storageVehicleRef = storageBase.child("vehicles")
     
     //Generating error
     private func generateError() -> String {
@@ -59,6 +61,33 @@ class FirebaseCommunicator {
     
     func userBooking(uid: String, dict: [String: Any], carType: String) {
         userRefrence.child(uid).child("bookingCarsList").childByAutoId().updateChildValues(["carType": carType, "vaildPurchase": true])
-        bookingrefrence.child(uid).childByAutoId().updateChildValues(dict)
+        bookingRefrence.child(uid).childByAutoId().updateChildValues(dict)
+    }
+    
+    func getAllCars(success: @escaping([Car]) -> Void, failure: @escaping(String?) -> Void) {
+        
+        vehicleReference.observeSingleEvent(of: .value) { (snapshot) in
+            
+            guard let vehicleSnapshot = snapshot.children.allObjects as? [DataSnapshot] else {
+                failure(self.generateError())
+                return
+            }
+            
+            var carsArray = [Car]()
+            
+            for vehicle in vehicleSnapshot {
+                
+                guard
+                    let vehicleDict = vehicle.value as? [String: AnyObject],
+                    let vehicle = Car(dict: vehicleDict)
+                    else {
+                        failure(self.generateError())
+                        return
+                }
+                carsArray.append(vehicle)
+            }
+            
+            success(carsArray)
+        }
     }
 }

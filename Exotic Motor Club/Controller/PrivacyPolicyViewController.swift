@@ -8,26 +8,44 @@
 
 import UIKit
 
+enum SettingType {
+    case privacyPolicy
+    case termsOfUse
+    case paymentInfo
+}
+
 class PrivacyPolicyViewController: UIViewController {
-    
-    @IBOutlet weak var titleLabel: UILabel!
     
     //MARK: - Propertie
     var privacyPolicy: Bool?
+    var settingType: SettingType?
     
     //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let _ = privacyPolicy {
-            titleLabel.text = "Privacy Policy"
-        } else {
-            titleLabel.text = "Terms of Ose"
-        }
+        setupView()
     }
     
-    //MARK: - Button Action
-    @IBAction func dismissButtonAction(_ sender: UIButton) {
-        dismiss(animated: true, completion: nil)
+    //MARK: - Setup Views
+    private func setupView() {
+        
+            navigationController?.navigationBar.titleTextAttributes =
+                [NSAttributedStringKey.font: UIFont(name: "Helvetica", size: 17)!,
+                 NSAttributedStringKey.foregroundColor: UIColor.white]
+        
+        guard let settingType = settingType else { return }
+        
+        switch settingType {
+            
+        case .privacyPolicy:
+            title = "PRIVACY POLICY"
+            
+        case .termsOfUse:
+            title = "TERMS OF USE"
+            
+        case .paymentInfo:
+            title = "PAYMENT INFO"
+        }
     }
 }

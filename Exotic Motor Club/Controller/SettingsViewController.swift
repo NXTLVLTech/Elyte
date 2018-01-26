@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import MessageUI
+import Firebase
 
 class SettingsViewController: BaseViewController {
 
@@ -27,6 +29,7 @@ class SettingsViewController: BaseViewController {
     
     //MARK: - Setup View
     private func setupView() {
+        
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorColor = .darkGray
@@ -37,14 +40,21 @@ class SettingsViewController: BaseViewController {
     }
     
     @objc private func onOffToggle(_ sender: UISwitch) {
-        debugPrint(sender.isOn)
+        
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        FirebaseCommunicator.instance.saveData(uid: uid, dict: ["enableNotifications": sender.isOn])
     }
     
     //MARK: - Button Actions
     @IBAction func logoutButtonAction(_ sender: UIButton) {
-        showProgressHUD(animated: true)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            self.logoutFromFirebase()
+        
+        if currentReachabilityStatus == .reachableViaWiFi || currentReachabilityStatus == .reachableViaWWAN {
+            presentYesNoAlert(message: "Are you sure you want to logout?", yesHandler: { (action) in
+                self.showProgressHUD(animated: true)
+                self.logoutFromFirebase()
+            })
+        } else {
+            noInternetAlert()
         }
     }
 }
@@ -74,22 +84,37 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        if indexPath.row == 2 {
-            let urlEMail = NSURL(string: "mailto:support@motorclub.com")
+        if indexPath.row == 1 {
             
-            if UIApplication.shared.canOpenURL(urlEMail! as URL) {
-                UIApplication.shared.openURL(urlEMail! as URL)
+            if let paymentInfoVC = storyboard?.instantiateViewController(withIdentifier: "PrivacyPolicyVC") as? PrivacyPolicyViewController {
+                paymentInfoVC.settingType = .paymentInfo
+                navigationController?.pushViewController(paymentInfoVC, animated: true)
+            }
+        } else if indexPath.row == 2 {
+            
+            let mailComposeViewController = configuredMailComposeViewController()
+            
+            if MFMailComposeViewController.canSendMail() {
+                
+                self.present(mailComposeViewController, animated: true, completion: nil)
+            } else {
+                
+                self.showSendMailErrorAlert()
             }
         } else if indexPath.row == 3 {
             
             if let privacyPolicyVC = storyboard?.instantiateViewController(withIdentifier: "PrivacyPolicyVC") as? PrivacyPolicyViewController {
-                privacyPolicyVC.privacyPolicy = true
-                present(privacyPolicyVC, animated: true, completion: nil)
+                
+                privacyPolicyVC.settingType = .privacyPolicy
+                navigationController?.pushViewController(privacyPolicyVC, animated: true)
             }
         } else if indexPath.row == 4 {
             
-            if let privacyPolicyVC = storyboard?.instantiateViewController(withIdentifier: "PrivacyPolicyVC") as? PrivacyPolicyViewController {
-                present(privacyPolicyVC, animated: true, completion: nil)
+            if let termsOfUseVC = storyboard?.instantiateViewController(withIdentifier: "PrivacyPolicyVC") as? PrivacyPolicyViewController {
+                
+                termsOfUseVC.settingType = .termsOfUse
+                
+                navigationController?.pushViewController(termsOfUseVC, animated: true)
             }
         }
     }
@@ -112,5 +137,32 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
         let checkmark  = UIImageView(frame:CGRect(x:0, y:0, width:(image?.size.width)!, height:(image?.size.height)!));
         checkmark.image = image
         cell.accessoryView = checkmark
+    }
+}
+
+// MARK: MFMailComposeViewController Delegate
+extension SettingsViewController: MFMailComposeViewControllerDelegate {
+    
+    func configuredMailComposeViewController() -> MFMailComposeViewController {
+        let mailComposerVC = MFMailComposeViewController()
+        mailComposerVC.mailComposeDelegate = self // Extremely important to set the --mailComposeDelegate-- property, NOT the --delegate-- property
+        
+        mailComposerVC.setToRecipients(["support@motorclub.com"])
+        mailComposerVC.setSubject("Support")
+        mailComposerVC.setMessageBody("", isHTML: false)
+        
+        return mailComposerVC
+    }
+    
+    func showSendMailErrorAlert() {
+        
+        presentAlert(title: "Could Not Send Email", message: "Your device could not send e-mail.  Please check e-mail configuration and try again.") { (_) in
+            
+            self.dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        controller.dismiss(animated: true, completion: nil)
     }
 }

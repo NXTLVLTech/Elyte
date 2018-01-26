@@ -152,8 +152,8 @@ extension CarSelectViewController: UICollectionViewDataSource, UICollectionViewD
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SwipableCarCollectionViewCell", for: indexPath) as? SwipableCarCollectionViewCell {
             
-            guard let carImage = car?.mainImage else { return UICollectionViewCell() }
-            cell.carImage.image = carImage
+            guard let carImage = car?.imageURL else { return UICollectionViewCell() }
+            cell.updateCell(carImage: carImage)
             return cell
         } else {
             return UICollectionViewCell()

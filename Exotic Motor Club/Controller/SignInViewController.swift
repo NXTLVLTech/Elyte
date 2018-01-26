@@ -162,10 +162,11 @@ class SignInViewController: BaseViewController {
 //        let scanningViewController: UIViewController = PPViewControllerFactory.cameraViewController(with: self, coordinator: coordinator!, error: nil)
 //
 //        self.present(scanningViewController, animated: true, completion: nil)
-        let userDict = ["firstName": "Jared",
-                        "lastName": "DaSilva",
-                        "dateOfBirth": "06211990",
-                        "address": "1519 MAXIMILLIAN DR"] as [String : AnyObject]
+        let userDict = ["firstName": "Lazar",
+                        "lastName": "Vlaovic",
+                        "dateOfBirth": "26061999",
+                        "address": "Kninska 137, Veternik",
+                        "enableNotifications": true] as [String : AnyObject]
         
         self.userDict = userDict
         

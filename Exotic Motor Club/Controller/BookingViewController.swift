@@ -38,7 +38,7 @@ class BookingViewController: BaseViewController {
         carPriceLabel.text = "$\(car.price)"
         tripTotalLabel.text = "$\(car.price)"
         totalLabel.text = "$\(car.price + 23)"
-        carBookingDetailsLabel.text = car.topSpeedDetails
+        carBookingDetailsLabel.text = car.characteristics
         
         //Date Formatter
         let formatter = DateFormatter()
@@ -69,9 +69,14 @@ class BookingViewController: BaseViewController {
     //MARK: - Button Actions
     @IBAction func bookVehicleButtonAction(_ sender: UIButton) {
         
-        guard let car = car, let rentalDate = rentalDate, let returnDate = returnDate, let uid = Auth.auth().currentUser?.uid else {
-            return
-        }
+        guard
+            let car = car,
+            let rentalDate = rentalDate,
+            let returnDate = returnDate,
+            let uid = Auth.auth().currentUser?.uid,
+            let email = Auth.auth().currentUser?.email
+                else { return }
+        
         guard let guest = guestName.text, guest.count > 0 else {
             presentAlert(message: "Please enter guest name.")
             return
@@ -89,9 +94,9 @@ class BookingViewController: BaseViewController {
                            "guestName": guest,
                            "rentalDate": formatter.string(from: rentalDate),
                            "returnDate": formatter.string(from: returnDate),
-                           "location": "665 Williamson Junction Apt. 086",
-                           "userEmail": "test@gmail.com",
-                           "userUID": "123",
+                           "location": car.pickupLocation,
+                           "userEmail": email,
+                           "userUID": uid,
                            "validPurchase": true] as [String : Any]
         
         if currentReachabilityStatus == .reachableViaWiFi || currentReachabilityStatus == .reachableViaWWAN {

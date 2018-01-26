@@ -18,7 +18,7 @@ class SignUpViewController: BaseViewController {
     @IBOutlet weak var signUpButton: GradientView!
     
     //MARK: - Proporties
-    var userDict: [String: AnyObject]?
+    var userDict: [String: AnyObject]!
     var profileImage: UIImage?
     var validator = Validator()
     var allTextFields = [UITextField]()
@@ -118,15 +118,10 @@ class SignUpViewController: BaseViewController {
                     
                     let downloadUrl = metadata?.downloadURL()?.absoluteString
                     
-                    guard var userDict = unwrappedSelf.userDict else {
-                        unwrappedSelf.hideProgressHUD()
-                        return
-                    }
-                    
                     if let url = downloadUrl {
                         
-                        userDict["email"] = email as AnyObject
-                        userDict["profileLink"] = url as AnyObject
+                        unwrappedSelf.userDict["email"] = email as AnyObject
+                        unwrappedSelf.userDict["profileLink"] = url as AnyObject
                         
                         FirebaseCommunicator.instance.registerUser(uid: uid, userData: unwrappedSelf.userDict!)
                         unwrappedSelf.hideProgressHUD(animated: true)

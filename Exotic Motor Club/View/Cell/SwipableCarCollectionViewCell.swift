@@ -7,9 +7,18 @@
 //
 
 import UIKit
+import Kingfisher
 
 class SwipableCarCollectionViewCell: UICollectionViewCell {
     
-    @IBOutlet weak var carImage: UIImageView!
+    @IBOutlet weak var carImageView: UIImageView!
+    
+    func updateCell(carImage: String) {
+        
+        guard let url = URL(string: carImage) else { return }
+        carImageView.kf.indicatorType = .activity
+        carImageView.contentMode = .scaleAspectFill
+        carImageView.kf.setImage(with: url, options: [.transition(.fade(0.2))])
+    }
     
 }

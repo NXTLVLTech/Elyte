@@ -50,6 +50,7 @@ extension UIViewController {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: yesHandler))
         alert.addAction(UIAlertAction(title: "No", style: .cancel, handler: noHandler))
+        alert.view.tintColor = UIColor.tabBarActiveColor
         
         self.present(alert, animated: true, completion: nil)
     }

@@ -15,7 +15,7 @@ class PhoneNumberViewController: BaseViewController {
     @IBOutlet weak var phoneNumberTextField: UITextField!
     
     //MARK: - Proporties
-    var userDict: [String: AnyObject]?
+    var userDict: [String: AnyObject]!
     
     //MARK: - Lifecycle
     override func viewDidLoad() {
@@ -37,7 +37,6 @@ class PhoneNumberViewController: BaseViewController {
             presentAlert(message: "Please enter your phone number.")
             return
         }
-        guard var userDict = userDict else { return }
         
         userDict["phoneNumber"] = number as AnyObject
         performSegue(withIdentifier: "toAddProfileImageVCSegue", sender: nil)

@@ -10,7 +10,7 @@ import UIKit
 import Kingfisher
 import Firebase
 
-class ProfileViewController: BaseViewController {
+class ProfileViewController: BaseViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     //MARK: - Outlets
     @IBOutlet weak var profileImage: UIImageView!
@@ -19,17 +19,18 @@ class ProfileViewController: BaseViewController {
     //MARK: - Proporties
     var cellTitle = ["FIRST NAME", "LAST NAME", "EMAIL","PASSWORD", "PHONE NUMBER"]
     var profileEditType: EditProfileType?
+    var isAdded: Bool = false
     var user: User? {
         didSet {
             tableView.reloadData()
             hideProgressHUD()
         }
     }
-
+    
     //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         setupView()
     }
     
@@ -37,7 +38,10 @@ class ProfileViewController: BaseViewController {
         super.viewWillAppear(animated)
         
         self.navigationController?.setNavigationBarHidden(true, animated: true)
-        fetchUserData()
+        
+        if !isAdded {
+            fetchUserData()
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -52,7 +56,40 @@ class ProfileViewController: BaseViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.tableFooterView = UIView()
+        
+        //Setup Profile Image
         profileImage.layer.cornerRadius = profileImage.bounds.height / 2
+        if UserDefaults.standard.object(forKey: "isLoggedIn") != nil {
+            let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped))
+            profileImage.isUserInteractionEnabled = true
+            profileImage.addGestureRecognizer(tapGestureRecognizer)
+        }
+    }
+    
+    //MARK: - Image Tapping Delegate
+    @objc private func imageTapped() {
+        
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            let imagePicker = UIImagePickerController()
+            imagePicker.delegate = self
+            imagePicker.sourceType = .camera
+            imagePicker.cameraDevice = .front
+            imagePicker.allowsEditing = false
+            self.present(imagePicker, animated: true, completion: nil)
+        } else {
+            self.presentAlert(message: "Camera is not available.")
+        }
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
+            isAdded = true
+            profileImage.image = image
+            dismiss(animated:true, completion: nil)
+            saveImageToFirebase()
+        } else {
+            self.presentAlert(message: "Error with picking up image. Please choose another one.")
+        }
     }
     
     //MARK: - Web services
@@ -72,7 +109,7 @@ class ProfileViewController: BaseViewController {
                 self.hideProgressHUD()
                 return
             }
-        
+            
             FirebaseCommunicator.instance.getUserProfileData(uid: uid, success: { [weak self] (user) in
                 
                 guard let user = user, let unwrappedSelf = self else {
@@ -100,6 +137,59 @@ class ProfileViewController: BaseViewController {
             }
         } else {
             
+            noInternetAlert()
+        }
+    }
+    
+    private func saveImageToFirebase() {
+        
+        guard
+            let img = profileImage.image,
+            isAdded == true,
+            let imgData = UIImageJPEGRepresentation(img, 0.5)
+                else {
+                    imageTapped()
+                    return
+        }
+        
+        showProgressHUD(animated: true)
+        
+        let metadata = StorageMetadata()
+        metadata.contentType = "image/jpeg"
+        
+        if currentReachabilityStatus == .reachableViaWiFi || currentReachabilityStatus == .reachableViaWWAN {
+            
+            guard let uid = Auth.auth().currentUser?.uid else {
+                hideProgressHUD()
+                return
+            }
+            
+            FirebaseCommunicator.instance.storageProfileRef.child(uid).putData(imgData, metadata: metadata, completion: { [weak self] (metadata, error) in
+                
+                guard let unwrappedSelf = self else {
+                    self?.hideProgressHUD(animated: true)
+                    return
+                }
+                
+                if error != nil {
+                    unwrappedSelf.hideProgressHUD(animated: true)
+                    unwrappedSelf.isAdded = false
+                    unwrappedSelf.presentAlert(message: "Error with uploading an image to Firebase Storage.")
+                } else {
+                    unwrappedSelf.isAdded = false
+                    let downloadUrl = metadata?.downloadURL()?.absoluteString
+                    if let url = downloadUrl {
+                        let linkPic = FirebaseCommunicator.instance.userRefrence.child(uid).child("profileLink")
+                        linkPic.setValue(url)
+                        unwrappedSelf.hideProgressHUD(animated: true)
+                    } else {
+                        unwrappedSelf.isAdded = false
+                        unwrappedSelf.noInternetAlert()
+                    }
+                }
+            })
+        } else {
+            isAdded = false
             noInternetAlert()
         }
     }
@@ -143,6 +233,7 @@ extension ProfileViewController: ProfileInfoDelegate {
 extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
         if user != nil {
             return 5
         }

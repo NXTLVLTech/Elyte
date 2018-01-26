@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 class ExploreCarCollectionViewCell: UICollectionViewCell {
     
@@ -44,9 +45,13 @@ class ExploreCarCollectionViewCell: UICollectionViewCell {
     }
     
     func updateCell(car: Car) {
-        carImageView.image = car.mainImage
         carPriceLabel.text = "$\(car.price)"
         carNameLabel.text = car.name
+        
+        guard let url = URL(string: car.imageURL) else { return }
+        carImageView.kf.indicatorType = .activity
+        carImageView.contentMode = .scaleAspectFill
+        carImageView.kf.setImage(with: url, options: [.transition(.fade(0.2))])
     }
     
 }
